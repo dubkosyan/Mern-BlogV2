@@ -1,5 +1,5 @@
-import {createSlice, createAsyncThunk} from '@reduxjs/toolkit'
-import axios from "../../../utils/axios";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import axios from '../../../utils/axios'
 
 const initialState = {
     user: null,
@@ -10,9 +10,9 @@ const initialState = {
 
 export const registerUser = createAsyncThunk(
     'auth/registerUser',
-    async ({username, password}) => {
+    async ({ username, password }) => {
         try {
-            const {data} = await axios.post('/auth/register', {
+            const { data } = await axios.post('/auth/register', {
                 username,
                 password,
             })
@@ -25,11 +25,12 @@ export const registerUser = createAsyncThunk(
         }
     },
 )
+
 export const loginUser = createAsyncThunk(
-    'auth/registerUser',
-    async ({username, password}) => {
+    'auth/loginUser',
+    async ({ username, password }) => {
         try {
-            const {data} = await axios.post('/auth/login', {
+            const { data } = await axios.post('/auth/login', {
                 username,
                 password,
             })
@@ -42,15 +43,15 @@ export const loginUser = createAsyncThunk(
         }
     },
 )
+
 export const getMe = createAsyncThunk('auth/loginUser', async () => {
     try {
-        const {data} = await axios.get('/auth/me')
+        const { data } = await axios.get('/auth/me')
         return data
     } catch (error) {
         console.log(error)
     }
 })
-
 
 export const authSlice = createSlice({
     name: 'auth',
@@ -75,11 +76,11 @@ export const authSlice = createSlice({
             state.user = action.payload.user
             state.token = action.payload.token
         },
-        [registerUser.rejected]: (state, action) => {
+        [registerUser.rejectWithValue]: (state, action) => {
             state.status = action.payload.message
             state.isLoading = false
         },
-        //Login User
+        // Login user
         [loginUser.pending]: (state) => {
             state.isLoading = true
             state.status = null
@@ -90,7 +91,7 @@ export const authSlice = createSlice({
             state.user = action.payload.user
             state.token = action.payload.token
         },
-        [loginUser.rejected]: (state, action) => {
+        [loginUser.rejectWithValue]: (state, action) => {
             state.status = action.payload.message
             state.isLoading = false
         },
@@ -105,13 +106,14 @@ export const authSlice = createSlice({
             state.user = action.payload?.user
             state.token = action.payload?.token
         },
-        [getMe.rejected]: (state, action) => {
+        [getMe.rejectWithValue]: (state, action) => {
             state.status = action.payload.message
             state.isLoading = false
         },
-
-    }
+    },
 })
+
+export const checkIsAuth = (state) => Boolean(state.auth.token)
+
 export const { logout } = authSlice.actions
-export const checkIsAuth = state => Boolean(state.auth.token)
 export default authSlice.reducer
